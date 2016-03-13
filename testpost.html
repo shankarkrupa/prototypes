@@ -1,0 +1,77 @@
+<html>
+<head>
+<title>
+</title>
+<script src="http://code.jquery.com/jquery-2.2.1.min.js"></script>
+    <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+    <script type="text/javascript">
+        google.charts.load('current', { 'packages': ['corechart', 'line'] });
+
+        // Set a callback to run when the Google Visualization API is loaded.
+        google.charts.setOnLoadCallback(drawChart);
+
+        
+            // Callback that creates and populates a data table,
+            // instantiates the pie chart, passes in the data and
+            // draws it.
+            function drawChart() {
+
+               
+            }
+        
+    </script>
+</head>
+<body onload="funpost()">
+<script>
+function funpost()
+{
+var data = {
+  datapoints:
+    [{dataChnId: "temperature", values: {value: 25.6}}]
+};
+$.ajax({
+    type: "GET",
+    url: "https://api.mediatek.com/mcs/v2/devices/DaDxjiy6/datachannels/moisture/datapoints?limit=200",
+    headers: { deviceKey: "wjsFz1SQ8VdzPX5B" },
+    contentType: "application/json"
+})
+.done(function (data) {
+    
+    var rows = data.dataChannels[0].dataPoints;
+    var data = new google.visualization.DataTable();
+    data.addColumn('datetime', 'Collected At');
+    data.addColumn('number', 'Level');
+
+    var dataset = new google.visualization.DataTable();
+    dataset.addColumn('datetime', 'Collected At');
+    dataset.addColumn('number', 'Level');
+    
+    for (var lngStart = 0; lngStart < rows.length; lngStart++)
+    {
+        data.addRow(
+            [new Date(rows[lngStart].recordedAt), rows[lngStart].values.value]
+            );
+    
+    }
+
+    var options = {
+        'title': 'Moisture Level Trend',
+        'width': 800,
+        'height': 1000,
+        hAxis: { title: "Time" },
+        vAxis: { title: "Moisture level" }
+
+    };
+
+    // Instantiate and draw our chart, passing in some options.
+    var chart = new google.visualization.LineChart(document.getElementById('stamed_div'));
+    chart.draw(data, options);
+    setTimeout(funpost, 255);
+})
+
+}
+</script>
+</body>
+<div id="stamed_div"></div>
+
+</html>
